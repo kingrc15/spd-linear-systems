@@ -1,4 +1,5 @@
 import numpy as np
+from solvers.solver import Solver
 
 
 class ConjugateGradient:
@@ -8,24 +9,6 @@ class ConjugateGradient:
         self.eps = eps
 
     def fit(self, A, b):
-        # n = len(b)
-        # x = np.zeros(b.shape[0])
-        # r = b - np.dot(A, x)
-        # p = r.copy()
-        # k = 0
-        # rsold = np.dot(r, r)
-
-        # for k in range(self.iterations):
-        #     Ap = np.dot(A, p)
-        #     alpha = rsold / np.dot(p, Ap)
-        #     x = x + alpha * p
-        #     r = r - alpha * Ap
-        #     rsnew = np.dot(r, r)
-        #     p = r + (rsnew / rsold) * p
-        #     rsold = rsnew
-
-        # return x
-
         x = np.zeros(b.shape[0])
         r = b.copy()
         p = r.copy()
