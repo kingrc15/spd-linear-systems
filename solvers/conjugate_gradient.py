@@ -1,7 +1,8 @@
 import numpy as np
+from solvers.solver import Solver
 
 
-class ConjugateGradient:
+class ConjugateGradient(Solver):
     def __init__(self, iterations):
         super(ConjugateGradient, self).__init__()
         self.iterations = iterations
