@@ -26,9 +26,9 @@ class Cholesky(Solver):
         matrix_size = A.shape[0]
         x = np.zeros(matrix_size)
         for i in range(matrix_size):
-            if lower: x[i] = (b[i] - np.sum(A[i, 0:i] @ x[0:i]))/A[i,i]
+            if lower: x[i] = (b[i] - (A[i, 0:i] @ x[0:i]))/A[i,i]
             else: 
-                x[matrix_size-i-1] = (b[matrix_size-i-1] - np.sum(A[matrix_size-i-1][matrix_size-i:] @ x[matrix_size-i:]))/A[matrix_size-i-1,matrix_size-i-1]
+                x[matrix_size-i-1] = (b[matrix_size-i-1] - (A[matrix_size-i-1][matrix_size-i:] @ x[matrix_size-i:]))/A[matrix_size-i-1,matrix_size-i-1]
 
         return x
 
