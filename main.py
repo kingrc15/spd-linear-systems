@@ -14,7 +14,6 @@ def parser():
         choices=["cholesky", "conjugate", "gd", "sgd"],
         default="conjugate",
     )
-
     parser.add_argument(
         "--ns",
         nargs="+",
@@ -44,6 +43,25 @@ def parser():
         type=float,
         help="sparsity parameter",
     )
+    parser.add_argument(
+        "--step_size",
+        nargs="+",
+        default=0.1,
+        type=float,
+        help="step size for gradient-based methods",
+    )
+    parser.add_argument(
+        "--batch_size",
+        default=1,
+        type=int,
+        help="batch size for stochastic gradient descent",
+    )
+    parser.add_argument("--sgd_iter_mode", 
+        default="stochastic", 
+        choices=["stochastic", "cyclical"], 
+        type=str, 
+        help="batch selection policy"
+        )
     parser.add_argument(
         "--iterations", default=200, type=int, help="number of update iterations"
     )
@@ -98,7 +116,12 @@ if __name__ == "__main__":
             elif args.solver == "gd":
                 solver = GD()
             elif args.solver == "sgd":
-                solver = SGD()
+                solver = SGD(
+                    iterations=args.iterations,
+                    batch_size=args.batch_size,
+                    step_size=args.step_size,
+                    iterate_mode=args.sgd_iter_mode
+                    )
 
             time_begin = time.time()
             x = solver.fit(A, b)
