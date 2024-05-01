@@ -5,7 +5,7 @@ class SGD(Solver):
     def __init__(
         self,
         iterations=100,
-        batch_size=16,  
+        batch_size=1,  
         step_size=1e-3,
         iterate_mode="stochastic"
         ):
