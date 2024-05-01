@@ -12,7 +12,7 @@ def parser():
     parser.add_argument(
         "--solver",
         choices=["cholesky", "conjugate", "gd", "sgd"],
-        default="conjugate",
+        default="gd",
     )
     parser.add_argument(
         "--ns",
@@ -36,9 +36,12 @@ def parser():
         nargs="+",
         default=[
             0.01,
+            0.02,
+            0.03,
+            0.04,
             0.05,
-            0.1,
-            0.2,
+            # 0.1,
+            # 0.2,
         ],
         type=float,
         help="sparsity parameter",
@@ -63,9 +66,9 @@ def parser():
         help="batch selection policy"
         )
     parser.add_argument(
-        "--iterations", default=200, type=int, help="number of update iterations"
+        "--iterations", default=10000, type=int, help="number of update iterations"
     )
-    parser.add_argument("--eps", default=0.001, type=float, help="target residual")
+    parser.add_argument("--eps", default=1e-5, type=float, help="target mean residual")
 
     return parser.parse_args()
 
@@ -81,9 +84,13 @@ if __name__ == "__main__":
     result_means = {}
     result_stds = {}
 
+    lrs_means = {}
+    lrs_stds = {}
+
     for n, delta in product(args.ns, args.deltas):
         t_deltas = []
         residuals = []
+        lrs = []
         for seed in seeds:
             np.random.seed(seed)
 
@@ -114,7 +121,7 @@ if __name__ == "__main__":
             elif args.solver == "conjugate":
                 solver = ConjugateGradient(n, args.eps)
             elif args.solver == "gd":
-                solver = GD()
+                solver = GD(n, args.eps)
             elif args.solver == "sgd":
                 solver = SGD(
                     iterations=args.iterations,
@@ -138,10 +145,17 @@ if __name__ == "__main__":
             t_deltas.append(time_end - time_begin)
             residuals.append(residual)
 
+            if args.solver == "gd":
+                lrs = solver.lrs
+
         result_means[(n, delta)] = np.mean(residuals)
         result_stds[(n, delta)] = np.std(residuals)
         time_means[(n, delta)] = np.mean(t_deltas)
         time_stds[(n, delta)] = np.std(t_deltas)
+        
+        if args.solver == "gd":
+            lrs_means[(n, delta)] = np.mean(lrs)
+            lrs_stds[(n, delta)] = np.std(lrs)
         print(header)
         print(
             f"Time elapsed: Mean = {time_means[(n, delta)]}, STD = {time_stds[(n, delta)]}"
@@ -161,6 +175,11 @@ if __name__ == "__main__":
     result_stds = pd.Series(
         result_stds.values(), index=multi_index, name="Residuals STD"
     )
+
+    if args.solver == "gd":
+        lrs_means = pd.Series(lrs_means.values(), index=multi_index, name="Mean LR")
+        lrs_stds = pd.Series(lrs_stds.values(), index=multi_index, name="LR STD")
+    
     print(time_means)
     print(time_stds)
 
@@ -194,3 +213,18 @@ if __name__ == "__main__":
     rm_plot.set_title("Mean Residuals")
     rm_plot.figure.savefig("Mean Residuals.png", bbox_inches="tight", dpi=500)
     rm_plot.clear()
+
+    if args.solver == "gd":
+        for matrix_size in args.ns:
+            rm_plot = lrs_means[matrix_size].plot(
+                legend=True,
+                xlabel="Delta",
+                ylabel="MeanLearning Rate",
+                label=f"Matrix Size = {matrix_size}",
+                use_index=True,
+                yerr=lrs_stds[matrix_size],
+            )
+
+        rm_plot.set_title("Mean Learning Rate")
+        rm_plot.figure.savefig("Mean lr.png", bbox_inches="tight", dpi=500)
+        rm_plot.clear()
