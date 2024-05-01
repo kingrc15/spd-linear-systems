@@ -55,8 +55,7 @@ class SGD(Solver):
         self.compute_loss()
 
     def compute_grad(self):
-        temp = self.A_hat @ self.x - self.b_hat
-        self.grad = 2 * (self.A_hat.T @ temp)
+        self.grad = self.A_hat @ self.x - self.b_hat
 
     def update_solution(self):
         self.x -= self.step_size * self.grad
