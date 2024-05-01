@@ -56,7 +56,7 @@ class SGD(Solver):
 
     def compute_grad(self):
         temp = self.A_hat @ self.x - self.b_hat
-        self.grad = self.A_hat.T @ temp
+        self.grad = self.A_hat.T @ temp / len(self.b_hat) #normalize the gradient
 
     def update_solution(self):
         self.x -= self.step_size * self.grad
