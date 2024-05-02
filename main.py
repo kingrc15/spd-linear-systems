@@ -96,7 +96,6 @@ if __name__ == "__main__":
 
             A = np.triu(np.random.rand(n, n) * 2 - 1)
             A += A.T
-            A *= 0.5
             np.fill_diagonal(A, 1)
 
             assert (np.abs(A) <= 1).all()
