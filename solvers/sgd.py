@@ -4,9 +4,9 @@ from solvers.solver import Solver
 class SGD(Solver):
     def __init__(
         self,
-        iterations,
-        batch_size,  
-        step_size,
+        iterations=100,
+        batch_size=1,  
+        step_size=0.001,
         iterate_mode="stochastic"
         ):
         super(SGD, self).__init__()
