@@ -4,9 +4,9 @@ from solvers.solver import Solver
 class SGD(Solver):
     def __init__(
         self,
-        iterations=100,
-        batch_size=1,  
-        step_size=1e-3,
+        iterations,
+        batch_size,  
+        step_size,
         iterate_mode="stochastic"
         ):
         super(SGD, self).__init__()
@@ -20,7 +20,7 @@ class SGD(Solver):
         self.b = b
         self.start_idx = 0
         self.end_idx = min(self.batch_size, len(self.A))
-        self.x = np.random.randn(len(self.A))
+        self.x = np.zeros(len(self.A))
         self.loss = []
         self.compute_loss()
 
@@ -52,11 +52,10 @@ class SGD(Solver):
         self.b_hat = self.b[batch_indices]
         self.compute_grad()
         self.update_solution()
-        self.compute_loss()
 
     def compute_grad(self):
         temp = self.A_hat @ self.x - self.b_hat
-        self.grad = self.A_hat.T @ temp / len(self.b_hat) #normalize the gradient
+        self.grad = self.A_hat.T @ temp / len(self.b_hat)
 
     def update_solution(self):
         self.x -= self.step_size * self.grad
@@ -66,7 +65,9 @@ class SGD(Solver):
         for _ in range(self.iterations):
             self.sgd_iterate()
             self.update_batch()
+            self.compute_loss()
         if return_loss:
             return self.x, self.loss
         else:
             return self.x 
+
