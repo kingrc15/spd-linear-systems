@@ -49,7 +49,7 @@ def parser():
     parser.add_argument(
         "--step_size",
         nargs="+",
-        default=0.001,
+        default=0.5,
         type=float,
         help="step size for gradient-based methods",
     )
